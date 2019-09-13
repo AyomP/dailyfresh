@@ -1,0 +1,50 @@
+{# 这个html会获得haystack的传递的上下文 #}
+{# query: 搜索的关键字 #}
+{# page: 当前页对象 page.object搜索到的SKU对象 page.number当前页号 #}
+{# paginator: 分页paginator对象 paginator.page_range 页号列表 #}
+
+{% extends 'base_detail_list.html' %}
+{% block title %}天天生鲜-商品搜索结果列表{% endblock title %}
+{% block main_content %}
+	<div class="breadcrumb">
+        {# query 返回当前搜索内容 #}
+		<a href="#">{{ query }}</a>
+		<span>></span>
+		<a href="#">搜索结果如下:</a>
+	</div>
+
+	<div class="main_wrap clearfix">
+        <ul class="goods_type_list clearfix">
+            {# page 当前搜索页对象 page.object获取当前页的sku对象 #}
+            {% for item in page %}
+            <li>
+                <a href="{% url 'goods:detail' item.object.id %}"><img src="{{ item.object.image.url }}"></a>
+                <h4><a href="{% url 'goods:detail' item.object.id %}">{{ item.object.name }}</a></h4>
+                <div class="operate">
+                    <span class="prize">￥{{ item.object.price }}</span>
+                    <span class="unit">{{ item.object.price}}/{{ item.object.unite }}</span>
+                    <a href="#" class="add_goods" title="加入购物车"></a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="pagenation">
+                {# has_previous当前页的前一页对象 #}
+                {% if page.has_previous %}
+                    {# hprevious_page_number当前页的前一页页码 #}
+				<a href="/search?q={{ query }}&page={{ page.previous_page_number }}"><上一页</a>
+                {% endif %}
+                    {# paginator返回的页对象 paginator.page_range页码列表 #}
+                {% for pindex in paginator.page_range %}
+                    {% if pindex == page.number %}
+				        <a href="/search?q={{ query }}&page={{ pindex }}" class="active">{{ pindex }}</a>
+                    {% else %}
+				        <a href="/search?q={{ query }}&page={{ pindex }}">{{ pindex }}</a>
+                    {% endif %}
+				{% endfor %}
+                {% if spage.has_next %}
+				<a href="/search?q={{ query }}&page={{ page.next_page_number }}">下一页></a>
+                {% endif %}
+			</div>
+	</div>
+{% endblock main_content %}
